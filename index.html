@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Job Tracker - Add</title>
+    <style>
+      body {
+        background: #121212;
+        color: white;
+        font-family: Arial;
+        text-align: center;
+        padding: 40px;
+      }
+
+      input,
+      button {
+        padding: 10px;
+        margin: 10px;
+        border-radius: 5px;
+        border: none;
+      }
+
+      input {
+        width: 250px;
+      }
+
+      button {
+        background: #333;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Add Job Application</h2>
+
+    <input type="text" id="company" placeholder="Company Name" /><br />
+    <input type="text" id="role" placeholder="Job Role" /><br />
+    <input type="date" id="date" /><br />
+    <label>Deadline:</label><br />
+    <input type="date" id="deadline" /><br />
+
+    <button onclick="addApplication()">Add</button>
+    <button onclick="location.href='view.html'">View Applications</button>
+    <button onclick="location.href='dashboard.html'">Dashboard</button>
+
+    <script>
+      function addApplication() {
+        let company = document.getElementById("company").value;
+        let role = document.getElementById("role").value;
+        let date = document.getElementById("date").value;
+        let deadline = document.getElementById("deadline").value;
+
+        if (!company || !role || !date || !deadline) {
+          alert("Fill all fields");
+          return;
+        }
+
+        let applications =
+          JSON.parse(localStorage.getItem("applications")) || [];
+
+        applications.push({
+          company,
+          role,
+          date,
+          deadline,
+          status: "Applied",
+        });
+
+        localStorage.setItem("applications", JSON.stringify(applications));
+
+        alert("Application Added!");
+      }
+    </script>
+  </body>
+</html>

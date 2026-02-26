@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>View Applications</title>
+    <style>
+      body {
+        background: #121212;
+        color: white;
+        font-family: Arial;
+        text-align: center;
+        padding: 20px;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 10px;
+      }
+
+      th {
+        background: #1f1f1f;
+      }
+
+      input {
+        padding: 8px;
+        margin: 10px;
+        width: 250px;
+      }
+
+      button {
+        padding: 6px 10px;
+        background: #333;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      .expired {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Applications</h2>
+
+    <input
+      type="text"
+      id="search"
+      placeholder="Search Company"
+      onkeyup="searchCompany()"
+    />
+
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Role</th>
+          <th>Applied Date</th>
+          <th>Deadline</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <br />
+    <button onclick="location.href='index.html'">Back</button>
+
+    <script>
+      let applications = JSON.parse(localStorage.getItem("applications")) || [];
+      let tableBody = document.getElementById("tableBody");
+
+      function renderTable() {
+        tableBody.innerHTML = "";
+        let today = new Date().toISOString().split("T")[0];
+
+        applications.forEach((app, index) => {
+          let deadlineClass = app.deadline < today ? "expired" : "";
+
+          tableBody.innerHTML += `
+      <tr>
+        <td>${app.company}</td>
+        <td>${app.role}</td>
+        <td>${app.date}</td>
+        <td class="${deadlineClass}">${app.deadline}</td>
+        <td>${app.status}</td>
+        <td>
+          <button onclick="updateStatus(${index})">Change</button>
+          <button onclick="deleteApp(${index})">Delete</button>
+        </td>
+      </tr>
+    `;
+        });
+      }
+
+      function updateStatus(index) {
+        let statusFlow = ["Applied", "Interview", "Selected", "Rejected"];
+        let currentIndex = statusFlow.indexOf(applications[index].status);
+        applications[index].status =
+          statusFlow[(currentIndex + 1) % statusFlow.length];
+
+        localStorage.setItem("applications", JSON.stringify(applications));
+        renderTable();
+      }
+
+      function deleteApp(index) {
+        applications.splice(index, 1);
+        localStorage.setItem("applications", JSON.stringify(applications));
+        renderTable();
+      }
+
+      function searchCompany() {
+        let input = document.getElementById("search").value.toLowerCase();
+        let rows = document.querySelectorAll("#tableBody tr");
+
+        rows.forEach((row) => {
+          let company = row.children[0].innerText.toLowerCase();
+          row.style.display = company.includes(input) ? "" : "none";
+        });
+      }
+
+      renderTable();
+    </script>
+  </body>
+</html>
